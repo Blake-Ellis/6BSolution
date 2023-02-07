@@ -1,18 +1,17 @@
 ﻿@model _6BSolution.Models.Booking
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Create";
 }
 
-<h1>Edit</h1>
+<h1>Create</h1>
 
-<h4>Booking</h4>
+<h4>Create A New Valet Booking</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="BookingId" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -25,12 +24,23 @@
             </div>
             <div class="form-group">
                 <label asp-for="Flexibility" class="control-label"></label>
-                <input asp-for="Flexibility" class="form-control" />
+                <select asp-for="Flexibility">
+                    <option selected="selected" value="">Select Your Flexibility On The Date Provided</option>
+                    <option value="+/- 1 Day">+/- 1 Day</option>
+                    <option value="+/- 2 Days">+/- 2 Days</option>
+                    <option value="+/- 3 Days">+/- 3 Days</option>
+                </select>
                 <span asp-validation-for="Flexibility" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="VehicleSize" class="control-label"></label>
-                <input asp-for="VehicleSize" class="form-control" />
+                <select asp-for="VehicleSize">
+                    <option selected="selected" value="">Select Your Vehicle Size</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                    <option value="Van">Van</option>
+                </select>
                 <span asp-validation-for="VehicleSize" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -44,7 +54,7 @@
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>

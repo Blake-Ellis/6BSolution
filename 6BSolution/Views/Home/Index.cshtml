@@ -1,0 +1,75 @@
+﻿@model IEnumerable<_6BSolution.Models.Booking>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Bookings</h1>
+
+<a asp-action="Create">Create A New Valet Booking</a>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BookingDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Flexibility)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.VehicleSize)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ContactNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EmailAddress)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BookingDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Flexibility)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.VehicleSize)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ContactNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EmailAddress)
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" class="btn btn-outline-primary" asp-route-id="@item.BookingId">Edit</a>
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Details" class="btn btn-outline-info" asp-route-id="@item.BookingId">Details</a>
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@item.BookingId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

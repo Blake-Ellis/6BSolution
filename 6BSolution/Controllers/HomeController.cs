@@ -1,30 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using _6BSolution.Models;
+using _6BSolution.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using _6BSolution.Models;
+using System.Security.Claims;
+using bc = BCrypt.Net.BCrypt;
 
 namespace _6BSolution.Controllers
 {
-    public class BookingsController : Controller
+    public class HomeController : Controller
     {
         private readonly CrudContext _context;
 
-        public BookingsController(CrudContext context)
+        public HomeController(CrudContext context)
         {
             _context = context;
         }
 
-        // GET: Bookings
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Bookings.ToListAsync());
+            return View(await _context.Bookings.ToListAsync());
         }
 
-        // GET: Bookings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Bookings == null)
@@ -42,18 +42,16 @@ namespace _6BSolution.Controllers
             return View(booking);
         }
 
-        // GET: Bookings/Create
+        [AllowAnonymous]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Bookings/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookingId,Name,BookingDate,Flexibility,VehicleSize,ContactNumber,EmailAddress")] Booking booking)
+        [AllowAnonymous]
+        public async Task<IActionResult> Create([Bind("Name,BookingDate,Flexibility,VehicleSize,ContactNumber,EmailAddress")] Booking booking)
         {
             if (ModelState.IsValid)
             {
@@ -147,14 +145,44 @@ namespace _6BSolution.Controllers
             {
                 _context.Bookings.Remove(booking);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BookingExists(int id)
         {
-          return _context.Bookings.Any(e => e.BookingId == id);
+            return _context.Bookings.Any(e => e.BookingId == id);
+        }
+
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> Authenticate(LoginFormViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == model.Email);
+                if (user == null) return RedirectToAction(nameof(Login));
+                string passwordHash = bc.HashPassword(model.Password.ToString());
+                if (!bc.Verify(model.Password.ToString(), passwordHash)) return RedirectToAction(nameof(Login));
+                var claims = new[] { new Claim(ClaimTypes.Email, model.Email) };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
